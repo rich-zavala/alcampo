@@ -1,0 +1,143 @@
+/*Común*/
+body
+{
+	font-size: 14px;
+	font-family: 'helvetica';
+}
+.container
+{
+	width: 700px;
+	margin: auto;
+}
+.negritas
+{
+	font-weight: bold;
+}
+.text-right
+{
+	text-align: right;
+}
+.text-left
+{
+	text-align: left;
+}
+.text-center
+{
+	text-align: center;
+}
+table {
+border-collapse: collapse;
+border-spacing: 0;
+}
+.table>caption+thead>tr:first-child>th, .table>colgroup+thead>tr:first-child>th, .table>thead:first-child>tr:first-child>th, .table>caption+thead>tr:first-child>td, .table>colgroup+thead>tr:first-child>td, .table>thead:first-child>tr:first-child>td {
+border-top: 0;
+}
+.table>thead>tr>th {
+vertical-align: bottom;
+border-bottom: 2px solid #ddd;
+}
+.table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
+padding: 8px;
+line-height: 1.428571429;
+vertical-align: top;
+}
+
+element.style {
+}
+.table-striped>tbody>tr:nth-child(odd)>td, .table-striped>tbody>tr:nth-child(odd)>th {
+background-color: #f9f9f9;
+}
+.table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td {
+padding: 8px;
+line-height: 1.428571429;
+vertical-align: top;
+border-top: 1px solid #ddd;
+}
+
+.col-xs-6 {
+width: 50%;
+}
+.col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11 {
+float: left;
+}
+.col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+position: relative;
+min-height: 1px;
+}
+
+.marginTop10
+{
+	margin-top: 10px;
+}
+
+.font11
+{
+	font-size: 11px;
+}
+
+.font18
+{
+	font-size: 18px;
+}
+.td20 TH, .td20 TD
+{
+	width: 20%
+}
+hr
+{
+	border: 1px solid #C0BCBC;
+}
+.floatLeft
+{
+	float: left;
+}
+.floatRight
+{
+	float: right;
+}
+.clear
+{
+	clear: both;
+}
+
+#logoContainer {
+height: 106px;
+position: relative;
+}
+#logoLetras {
+font-family: Times;
+font-weight: bold;
+font-size: 69px;
+}
+#logoLetrasChicas {
+position: absolute;
+font-size: 9px;
+top: 72px;
+}
+#linea {
+border-bottom: 3px solid black;
+position: absolute;
+width: 480px;
+top: 77px;
+left: 219px;
+}
+#logoDireccion {
+position: absolute;
+top: 16px;
+right: 0;
+text-align: right;
+font-size: 11px;
+}
+.dataCliente {
+width: 500px;
+}
+.dataVenta.floatLeft {
+width: 190px;
+text-align: center;
+}
+.tabla th {
+background: silver;
+}
+.tabla {
+border: 1px solid black;
+}

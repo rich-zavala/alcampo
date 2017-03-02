@@ -1,0 +1,231 @@
+<div class="row">
+	<div class="col-sm-9">
+		<h2 class="moduloHeader"><span><?=$titulo?></span></h2>
+	</div>
+	<?php if($e == 0 and $permisos['registrar']): ?>
+	<div class="col-sm-3 text-right marginTop20">
+		<a class="btn btn-default pull-right" href="<?=path()?><?=$controlador?>/formulario<?=suffix()?>"><span class="marginRight6 glyphicon glyphicon-plus"></span> Nuevo registro</a>
+	</div>
+	<?php endif ?>
+</div>
+
+<hr>
+
+<div class="row marginTop20">
+	<?php
+	if($e > 0) //Error de permisos
+	{
+	?>	
+	<div class="col-xs-12">
+		<div class="alert alert-danger col-xs-12">
+			<?=$msg?>
+		</div>
+	</div>
+	<?php
+	}
+	else
+	{
+	?>
+	
+	<div class="col-md-12" id="filtro">
+		<form class="form-inline" role="form" method="post" action="<?=path()?><?=$controlador?><?=suffix()?>">
+			<div class="form-group">
+				<input type="text" class="form-control w184" id="filtro" name="filtro" placeholder="Filtre por folio o cliente" value="<?=$f['filtro']?>">
+			</div>
+			<div class="form-group">
+				<select class="form-control" id="serie" name="serie">
+					<option value="">Todas las series</option>
+					<?php
+					foreach($series as $s)
+					{
+						$selected = ($f['serie'] == $s) ? 'selected' : '';
+					?>
+					<option <?=$selected?>><?=$s?></option>
+					<?php
+					}
+					?>
+				</select>
+			</div>
+			<div class="form-group">
+				<select class="form-control" id="status" name="status">
+					<option value="-1">Todos los status</option>
+					<option value="0" <?=selected($f['status'], 0)?>>Vigentes</option>
+					<option value="1" <?=selected($f['status'], 1)?>>Cancelados</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<select class="form-control" id="orden" name="orden">
+					<option value="serie, folio" <?=selected($f['orden'], 'serie_folio')?>>Ordenar por folio</option>
+					<option value="cliente" <?=selected($f['orden'], 'cliente')?>>Ordenar por cliente</option>
+					<option value="fecha_venta" <?=selected($f['orden'], 'fecha_venta')?>>Ordenar por fecha</option>
+					<option value="importe" <?=selected($f['orden'], 'importe')?>>Ordenar por importe</option>
+					<option value="status" <?=selected($f['orden'], 'status')?>>Ordenar por status</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<select class="form-control" id="direccion" name="direccion">
+					<option value="ASC" >Asc</option>
+					<option value="DESC" <?=selected($f['direccion'], 'DESC')?>>Desc</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<select class="form-control" id="mostrar" name="mostrar">
+					<option value="20">20 registros</option>
+					<option value="50" <?=selected($f['mostrar'], 50)?>>50 registros</option>
+					<option value="100" <?=selected($f['mostrar'], 100)?>>100 registros</option>
+					<option value="200" <?=selected($f['mostrar'], 200)?>>200 registros</option>
+				</select>
+			</div>
+			
+			<div class="form-group">
+				<input type="text" name="fecha_venta1" class="fecha form-fechas form-control" value="<?=$f['fecha_venta1']?>" placeholder="Fecha inicio" id="fecha_venta" /> y
+				<input type="text" name="fecha_venta2" class="fecha form-fechas form-control" value="<?=$f['fecha_venta2']?>" placeholder="Fecha final" />
+			</div>
+			<button type="submit" class="btn btn-primary">Filtrar</button>
+		</form>
+		<hr>
+	</div>
+	<?php
+		if(count($registros) > 0)
+		{
+	?>
+	<div class="col-md-12 table-responsive">
+		<table class="table table-striped dataTable table-hover">
+			<thead>
+				<tr>
+					<th width="8%">Folio</th>
+					<th width="68%">Cliente</th>
+					<th width="6%">Fecha</th>
+					<th width="10%" class="text-right">Importe</th>
+					<th width="8%">Status</th>
+					<?php if($permisos['registrar'] or $permisos['cancelar'] or $permisos['eliminar']){ ?><th width="8%">&nbsp;</th><?php } ?>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach($registros as $r)
+				{
+					$activar = ($r->status == 0) ? 'hid' : '';
+					$desactivar = ($r->status == 0) ? '' : 'hid';
+				?>
+				<tr>
+					<td class="negritas" nowrap>
+						<a href="<?=path()?><?=$controlador?>/detalle/<?=$r->id?><?=suffix()?>">
+							<span class="glyphicon glyphicon-eye-open">
+							</span>&nbsp;&nbsp;<?=$r->serie?>
+							-
+							</span><?=$r->folio?>
+						</a>
+					</td>
+					<td><b>[<?=$r->cliente_id?>]</b> <?=$r->cliente?></td>
+					<td><?=$r->fecha_format?></td>
+					<td class="text-right importe"><?=money($r->importe)?></td>
+					<td>
+						<div class="label label-<?=($r->status == 0) ? 'info' : 'success'?> btnvigencia btn-xs val0 <?=$desactivar?>">Vigente</div>
+						<div class="label label-danger btnvigencia btn-xs val1 <?=$activar?>">Cancelado</div>
+					</td>
+					<?php if($permisos['cancelar'] or $permisos['eliminar']): ?>
+					<td class="text-center">
+						<?php if($r->status == 0){ ?>
+						<div class="btn-group">
+							<button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
+								<span class="marginRight6 glyphicon glyphicon-cog"></span> <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu pull-right text-left" role="menu">
+								<?php
+								if($permisos['copiar'] and $r->conb == 0):
+								?>
+								<li>
+									<a href="#" class="listaAccion copiar" data-id="<?=$r->id?>">
+										<span class="marginRight6 glyphicon glyphicon-bold"></span> Crear 'B'
+									</a>
+								</li>
+								<?php
+								endif;
+								?>
+								<?php
+								if($permisos['cambiar'] and $r->serie == 'B'):
+								?>
+								<li>
+									<a href="<?=path()?>ventas/cambiar/<?=$r->id?><?=suffix()?>">
+										<span class="marginRight6 glyphicon glyphicon-refresh"></span> Cambiar precios
+									</a>
+								</li>
+								<?php
+								endif;
+								?>
+								<?php
+								if($permisos['copiar']):
+								?>
+								<li>
+									<a href="#" class="listaAccion cambiar" data-table="<?=$controlador?>" data-key="id" data-id="<?=$r->id?>" data-value="1" data-controlador="<?=$controlador?>" data-importe="<?=$r->importe?>">
+										<span class="marginRight6 glyphicon glyphicon-ban-circle"></span> Cancelar
+									</a>
+								</li>
+								<?php
+								endif;
+								?>
+							</ul>
+						</div>
+						<?php } ?>
+					</td>
+					<?php endif ?>
+				</tr>
+				<?php
+				}
+				?>
+			</tbody>
+		</table>
+	</div>
+		<?php
+		}
+		else
+		{
+		?>
+	<div class="col-xs-12">
+		<div class="alert alert-warning">
+			No existen registros actualmente.
+		</div>
+	</div>
+	<?php
+		}
+		echo "<div class='col-lg-12'>{$pagination}</div>";
+	}
+	?>
+</div>
+<script>
+var tabla = '<?=$controlador?>';
+fechacion();
+
+//Copiar A > B
+$('.copiar').click(function(e){
+	e.preventDefault();
+	if(confirm('Confirme la copia de esta venta a la serie B'))
+	{
+		var t = $(this);
+		$.ajax({			
+			url: path + 'herramientas/copiar' + suffix,
+			method: 'post',
+			dataType: 'json',
+			data: {
+				id: t.data('id')
+			},
+			success: function(d)
+			{
+				if(d.error == 0)
+				{
+					window.location.assign(path + 'ventas/cambiar/' + d.id + suffix);
+				}
+				else
+				{
+					alert('Existe un error en el servidor o en el inicio de sesión.\nPor favor, salga del sistema e intente nuevamente.');
+				}
+			},
+			error: function()
+			{
+				alert('Existe un error en el servidor o en el inicio de sesión.\nPor favor, salga del sistema e intente nuevamente.');
+			}			
+		});
+	}
+});
+</script>

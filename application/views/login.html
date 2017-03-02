@@ -1,0 +1,26 @@
+<div id="login-wraper" class="login-form <?=($error > 0) ? 'alert' : ''?>">
+	<div class="text-center logoLogin"><img src="<?=path()?>r_/img/logo.png" /></div>
+	<hr>
+	<form class="form-signin" method="post" role="form">
+		<?php
+		if($error > 0)
+		{
+		?>
+		<div class="alert alert-danger">
+			<?=$msg?>
+		</div>
+		<?php
+		}
+		?>
+		<div class="form-group">
+			<input type="text" value="" class="input-block-level email form-control" placeholder="Nombre de usuario" name="user" autocomplete="off" autofocus required>
+		</div>
+		<div class="form-group">
+			<input type="password" value="" class="input-block-level form-control" placeholder="Contraseña" name="pass" autocomplete="off" required>
+		</div>
+		<button class="btn btn-large btn-block btn-primary" type="submit">Acceder al sistema</button>
+	</form>
+</div>
+<script>
+	$('BODY').attr('id', 'loginBody');
+</script>

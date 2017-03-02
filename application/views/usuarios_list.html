@@ -1,0 +1,171 @@
+<div class="row">
+	<div class="col-sm-9">
+		<h2 class="moduloHeader"><span><?=$titulo?></span></h2>
+	</div>
+	<?php if($e == 0 and $permisos['registrar']): ?>
+	<div class="col-sm-3 text-right marginTop20">
+		<a class="btn btn-default pull-right" href="<?=path()?><?=$controlador?>/formulario<?=suffix()?>"><span class="marginRight6 glyphicon glyphicon-plus"></span> Nuevo registro</a>
+	</div>
+	<?php endif ?>
+</div>
+
+<hr>
+
+<div class="row marginTop20">
+	<?php
+	if($e > 0) //Error de permisos
+	{
+	?>	
+	<div class="col-xs-12">
+		<div class="alert alert-danger col-xs-12">
+			<?=$msg?>
+		</div>
+	</div>
+	<?php
+	}
+	else
+	{
+	?>
+	
+	<div class="col-md-12" id="filtro">
+		<form class="form-inline" role="form" method="post" action="<?=path()?><?=$controlador?><?=suffix()?>">
+			<div class="form-group">
+				<input type="text" class="form-control form-largo" id="filtro" name="filtro" placeholder="Filtre por usuario, nombre o email" value="<?=$f['filtro']?>">
+			</div>
+			<div class="form-group">
+				<select class="form-control" id="status" name="status">
+					<option value="-1">Todos los status</option>
+					<option value="0" <?=selected($f['status'], 0)?>>Activos</option>
+					<option value="1" <?=selected($f['status'], 1)?>>Inactivos</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<select class="form-control" id="orden" name="orden">
+					<option value="user" <?=selected($f['orden'], 'user')?>>Ordenar por usuario</option>
+					<option value="nombre" <?=selected($f['orden'], 'nombre')?>>Ordenar por nombre</option>
+					<option value="email" <?=selected($f['orden'], 'email')?>>Ordenar por email</option>
+					<option value="status" <?=selected($f['orden'], 'status')?>>Ordenar por status</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<select class="form-control" id="direccion" name="direccion">
+					<option value="ASC" >Ascendente</option>
+					<option value="DESC" <?=selected($f['direccion'], 'DESC')?>>Descendente</option>
+				</select>
+			</div>
+			<div class="form-group">
+				<select class="form-control" id="mostrar" name="mostrar">
+					<option value="20">Mostrar 20 registros</option>
+					<option value="50" <?=selected($f['mostrar'], 50)?>>Mostrar 50 registros</option>
+					<option value="100" <?=selected($f['mostrar'], 100)?>>Mostrar 100 registros</option>
+					<option value="200" <?=selected($f['mostrar'], 200)?>>Mostrar 200 registros</option>
+				</select>
+			</div>
+			
+			<button type="submit" class="btn btn-primary">Filtrar</button>
+		</form>
+		<hr>
+	</div>
+	<?php
+		if(count($registros) > 0)
+		{
+	?>
+	<div class="col-md-12 table-responsive">
+		<table class="table table-striped dataTable">
+			<thead>
+				<tr>
+					<th width="28%">Usuario</th>
+					<th width="28%">Nombre</th>
+					<th width="28%">Email</th>
+					<th width="8%">Status</th>
+					<?php if($permisos['registrar'] or $permisos['cancelar'] or $permisos['eliminar']){ ?><th width="8%">&nbsp;</th><?php } ?>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach($registros as $r)
+				{
+					$activar = ($r->status == 0) ? 'hid' : '';
+					$desactivar = ($r->status == 0) ? '' : 'hid';
+				?>
+				<tr>
+					<td><?=$r->user?></td>
+					<td><?=$r->nombre?></td>
+					<td><?=$r->email?></td>
+					<td>
+						<div class="label label-info btnvigencia btn-xs val0 <?=$desactivar?>">Activo</div>
+						<div class="label label-danger btnvigencia btn-xs val1 <?=$activar?>">Inactivo</div>
+					</td>
+					<?php if($permisos['registrar'] or $permisos['cancelar'] or $permisos['eliminar']): ?>
+					<td class="text-center">
+						<div class="btn-group">
+							<button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
+								<span class="marginRight6 glyphicon glyphicon-cog"></span> <span class="caret"></span>
+							</button>
+							<ul class="dropdown-menu pull-right text-left" role="menu">								
+								<?php if($permisos['registrar']): ?>
+								<li>
+									<a href="<?=path()?><?=$controlador?>/formulario/<?=$r->user?><?=suffix()?>">
+										<span class="marginRight6 glyphicon glyphicon-pencil"></span> Editar
+									</a>
+								</li>
+								<?php
+								endif;
+								
+								if($permisos['cancelar']):
+								?>
+								<?php if($permisos['registrar']): ?><li class="divider"></li><?php endif ?>
+								<li class="<?=$desactivar?>">
+									<a href="#" class="listaAccion cambiar" data-table="<?=$controlador?>" data-key="user" data-id="<?=$r->user?>" data-value="1" data-controlador="<?=$controlador?>">
+										<span class="marginRight6 glyphicon glyphicon-ban-circle"></span> Desactivar
+									</a>
+								</li>
+								<li class="<?=$activar?>">
+									<a href="#" class="listaAccion cambiar" data-table="<?=$controlador?>" data-key="user" data-id="<?=$r->user?>" data-value="0" data-controlador="<?=$controlador?>">
+										<span class="marginRight6 glyphicon glyphicon-ban-circle"></span> Activar
+									</a>
+								</li>
+								<?php
+								endif;
+								
+								if($permisos['eliminar']):
+								?>
+								<?php if($permisos['registrar'] and !$permisos['cancelar']): ?><li class="divider"></li><?php endif ?>
+								<li>
+									<a href="#" class="listaAccion cambiar" data-table="<?=$controlador?>" data-key="user" data-id="<?=$r->user?>" data-value="-1" data-controlador="<?=$controlador?>">
+										<span class="marginRight6 glyphicon glyphicon-remove"></span> Eliminar
+									</a>
+								</li>
+								<?php
+								endif
+								?>
+							</ul>
+						</div>
+					</td>
+					<?php endif ?>
+				</tr>
+				<?php
+				}
+				?>
+			</tbody>
+		</table>
+	</div>
+		<?php
+		}
+		else
+		{
+		?>
+	<div class="col-xs-12">
+		<div class="alert alert-warning">
+			No existen registros actualmente.
+		</div>
+	</div>
+	<?php
+		}
+		echo "<div class='col-lg-12'>{$pagination}</div>";
+	}
+	?>
+</div>
+<script>
+var tabla = '<?=$controlador?>';
+</script>

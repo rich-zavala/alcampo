@@ -1,0 +1,241 @@
+/*Común*/
+h1, h2,h3,h4,h5,h6
+{
+	font-family: Helvetica, sans-serif;
+}
+
+.fluid {
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.table>thead>tr{
+	border-bottom: 3px solid #B3B3B3;
+}
+.table-border-top-tr
+{
+	border-top: 3px solid #B3B3B3;
+}
+.table-tr-primary
+{
+	background-color: #428BCA;
+	color: white;
+}
+.marginTop10
+{
+	margin-top: 10px;
+}
+.marginTop20
+{
+	margin-top: 20px;
+}
+.marginBottom0
+{
+	margin-bottom: 0;
+}
+.marginBottom10
+{
+	margin-bottom: 10px;
+}
+.marginRight6
+{
+	margin-right: 6px;
+}
+.marginRight10
+{
+	margin-right: 10px;
+}
+.marginLeft4
+{
+	margin-left: 4px;
+}
+.marginLeft20
+{
+	margin-left: 20px;
+}
+.negritas
+{
+	font-weight: bold;
+}
+.hid
+{
+	display: none;
+}
+.BorderTopGris
+{
+	border-top: 2px solid #eeeeee;
+}
+.minH110
+{
+	min-height: 110px;
+}
+.dataTable a:hover
+{
+	text-decoration: none;
+}
+/*Encabezado*/
+.topBG
+{
+	height: 112px;
+	margin-bottom: -106px;
+	border-bottom: 2px solid #222222;
+}
+/*Módulo*/
+.moduloHeader
+{
+	background: url(../img/bg_divider.png) left center repeat-x;
+}
+.moduloHeader SPAN
+{
+	background: #fff;
+	padding-right: .5em;
+}
+
+/*Logueo*/
+#loginBody
+{
+	background-image: url(../img/pattern.png);
+}
+
+#login-wraper {
+	border-radius: 15px;
+	box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	display: block;
+	margin-top: -155px;
+	margin-left: -240px;
+	padding: 25px;
+	width: 480px;
+	height: 310px;
+	background: white;
+	text-align: center;
+}
+
+#login-wraper.alert {
+	margin-top: -190px;
+	height: 380px;
+}
+
+.login-form legend {
+	font-family: Helvetica, sans-serif;
+	font-size: 36px;
+	font-weight: 300;
+	color: #333333;
+	-webkit-font-smoothing: subpixel-antialiased;
+}
+.login-form legend {
+	margin-top: 5px;
+	margin-bottom: 30px;
+	padding-bottom: 25px;
+}
+
+.login-form input[type="text"], .login-form form input[type="password"] {
+	font-size: 16px;
+	height: auto;
+	margin-bottom: 15px;
+	padding: 7px 9px;
+}
+
+/*Formulario de venta*/
+.articulosHeader
+{
+	border-bottom: 2px solid #eeeeee;
+}
+
+/*Listados de catálogos*/
+.btnvigencia, .numeric
+{
+	width: 80px;
+}
+.btnvigencia
+{
+	display: block;
+	padding: 4px;
+}
+.btnvigencia.hid
+{
+	display: none;
+}
+.numeric
+{
+	padding: 2px 4px;
+}
+.w184 {
+	width: 184px;
+}
+.form-largo {
+	width: 280px;
+}
+.fecha-define
+{
+	width: 220px;
+}
+.form-fechas
+{
+	width: 104px;
+}
+.aviso
+{
+	position: absolute;
+	bottom: -25px;
+	width: 100%;
+	left: 0;
+	font-size: 11px;
+}
+.tope
+{
+	width: 80px;
+}
+#tabla TD, #tabla TH
+{
+	vertical-align: middle;
+}
+#tabla TD LABEL, #tabla TH LABEL
+{
+	margin: 0;
+}
+#tabla .form-control
+{
+	height: 30px;
+	padding: 4px;
+}
+.thumbnail-img
+ {
+	height: 200px;
+	overflow: hidden;
+}
+.thumbnail-img IMG
+{
+	max-width: 100%;
+}
+.div-center
+{
+	margin-left: auto;
+	margin-right: auto;
+	float: none;
+}
+.dataTable .btn-group
+{
+	margin-top: -2px;
+	margin-bottom: -2px;
+}
+.vmiddle
+{
+	vertical-align: middle !important;
+}
+col
+{
+	border-right: 1px solid #DDD;
+}
+.font11
+{
+	font-size: 11px;
+}
+.font9
+{
+	font-size: 9px;
+}

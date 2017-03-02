@@ -1,0 +1,585 @@
+<div class="row">
+	<div class="col-sm-9">
+		<h2 class="moduloHeader"><span><?=$titulo?></span></h2>
+	</div>
+	<div class="col-sm-3 text-right marginTop20">
+		<a class="btn btn-default pull-right" href="<?=path()?><?=$controlador?><?=suffix()?>"><span class="marginRight6 glyphicon glyphicon-chevron-left"></span> Regresar al listado</a>
+	</div>
+</div>
+
+<hr>
+
+<?php
+//Mensaje de evento
+if(isset($evento)){
+?>
+<div class="alert alert-<?=(!isset($error)) ? 'success' : 'danger'?> alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<?=$evento?>
+</div>
+<?php } ?>
+
+<form class="form marginTop10" role="form" action="<?=path()?><?=$controlador?>/registro<?=suffix()?>" id="formRecord" method="post">
+	<div class="row">
+		<div class="form-group col-lg-4">
+			<div class="panel panel-info">
+				<div class="panel-heading negritas">Información de la venta</div>
+				<div class="panel-body">
+					<div class="row">
+						<div class="col-md-12">
+								<label for="fecha">Fecha de venta</label>
+								<input type="text" class="form-control fecha" id="fecha" name="fecha" value="<?=date('Y-m-d')?>" required>
+						</div>
+					</div>
+					<hr>
+					<label for="cliente" class="control-label">Cliente</label>
+					<div class="input-group">
+						<input type="text" class="form-control" id="cliente" name="cliente" placeholder="Código o nombre y [ENTER]" autocomplete="off" autofocus required>
+						<span class="input-group-btn" title="Buscar el código de un cliente">
+							<button class="btn btn-default" data-toggle="modal" data-target="#dialogCliente" type="button"><span class="glyphicon glyphicon-search"></span></button>
+						</span>
+					</div>
+					<div class="marginTop10">
+						<div class="alert alert-danger hid" id="clienteError"></div>
+						<div class="text-muted" id="clienteData"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="form-group col-lg-8">
+			<div class="panel panel-default" id="panelProductos">
+				<div class="panel-heading negritas">Productos asignados a este cliente</div>
+				<div class="panel-body">
+					<div class="alert alert-warning" id="productosAlert"><span class="marginRight6 glyphicon glyphicon-info-sign"></span> Seleccione un cliente para mostrar sus productos asignados</div>
+					<table class="table table-striped table-bordered table-condensed table-hover hid _pr" id="tabla">
+						<thead>
+							<tr>
+								<th width="16%">Calibre</th>
+								<th width="16%">Registro</th>
+								<th width="26%">Producto</th>
+								<th width="8%">Disp.</th>
+								<th width="10%">Cantidad</th>
+								<th width="10%">Precio</th>
+								<th width="14%">Total</th>
+								<th></th>
+							</tr>
+						</thead>
+						<thead id="_tbodyCartuchoEscopeta_h">
+							<tr class="lineaHeader table-border-top-tr table-tr-primary">
+								<th colspan="7">Cartucho escopeta</th>
+								<th class="text-center"><a href="#" data-linea="Cartucho escopeta" data-tbody="_tbodyCartuchoEscopeta" class="btn btn-success btn-xs agregar_producto"><span class="glyphicon glyphicon-plus" title="Agregue un producto de esta línea"></span></a></th>
+							</tr>
+						</thead>
+						<tbody id="_tbodyCartuchoEscopeta"></tbody>
+						<thead id="_tbodyFuegoCentral_h">
+							<tr class="lineaHeader table-border-top-tr table-tr-primary">
+								<th colspan="7">Fuego central</th>
+								<th class="text-center"><a href="#" data-linea="Fuego central" data-tbody="_tbodyFuegoCentral" class="btn btn-success btn-xs agregar_producto"><span class="glyphicon glyphicon-plus" title="Agregue un producto de esta línea"></span></a></th>
+							</tr>
+						</thead>
+						<tbody id="_tbodyFuegoCentral"></tbody>
+						<thead>
+							<tr class="lineaHeader table-border-top-tr warning">
+								<th class="text-right" colspan="6">Total</th>
+								<th class="text-right" id="Ttotal">0.00</th>
+								<th></th>
+							</tr>
+						</thead>
+					</table>
+					<div class="text-center hid _pr">
+						<button id="submitter" class="btn btn-primary"><span class="marginRight6 glyphicon glyphicon-floppy-open"></span> Finalizar esta venta</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
+
+<div class="modal fade" id="dialogCliente">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Busque un cliente en el catálogo</h4>
+			</div>
+			
+			<div class="modal-body">
+				<form id="dialogForm" class="input-group">
+					<input type="email" class="form-control" id="dialogoInput" name="dialogoInput" placeholder="Escriba el nombre de un cliente" autofocus>
+					<span class="input-group-btn">
+						<button class="btn btn-default" id="dialogButton" data-toggle="modal" data-target="#dialogCliente" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+					</span>
+				</form>
+				
+				<p class="text-warning marginTop20 negritas hid" id="dialogBuscando"></p>
+				
+				<table id="dialogResultado" class="table table-striped marginTop20"></table>
+				
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+var ta = $('#tabla');
+var pp = $('#panelProductos');
+var pa = $('#productosAlert');
+var ce = $('#clienteError');
+var cd = $('#clienteData');
+var cliente = 0;
+var fecha = $('#fecha').val();
+//sinDecimal($('#cliente'));
+
+/*Catálogos*/
+var categorias = <?=$categorias?>;
+var productos = <?=$productos?>;
+var cliente_productos;
+
+$('#cliente').typeahead({
+	source: <?=json_encode($clientes_nombres)?>
+}).keypress(function(event){
+	if(event.keyCode == 13) {
+		event.preventDefault();
+		buscarNombre();
+		return false;
+	}
+ }).blur(function(){
+	var cval = $.trim($(this).val());
+	var v = parseInt(cval);
+	if(isNaN(v) && cval.length > 0)
+	{
+		buscarNombre();
+	}
+	else if(v > 0)
+	{
+		if(v != cliente) datosCliente(v);
+		cliente = v;
+	}
+	else
+	{
+		limpiar();
+	}
+});
+
+var cindices = <?=json_encode($clientes_indices)?>;
+function buscarNombre()
+{
+	var nombre = $.trim($('#cliente').val());
+	var encontrado = 0;
+	for(var id in cindices)
+	{
+		if($.trim(cindices[id]) == nombre)
+		{
+			$('#cliente').val(id).blur();
+			encontrado++;
+			return false;
+		}
+	}
+	if(encontrado == 0) $('#cliente').val('').blur();
+}
+
+$('#fecha').datepicker({
+	format: 'yyyy-mm-dd'
+}).on('changeDate', function(){
+	$(this).datepicker('hide');
+	var v = $.trim($(this).val());
+	console.log(v+' != '+fecha+' && '+cliente+' > 0');
+	if(v != fecha && cliente > 0)
+	{
+		datosCliente(cliente);
+		fecha = v;
+	}
+	else
+	{
+		limpiar();
+	}	
+}).blur(function(){
+	if(!/^\d{4}-\d{2}-\d{2}$/.test($(this).val())) $(this).val(null);
+});
+
+//Limpiar info de cliente
+function limpiar()
+{
+	ce.hide();
+	cd.empty();
+	cliente = 0;
+	total = 0;
+	pesconder();
+}
+
+//Buscador en diálogo
+var dr = $('#dialogResultado');
+var dc = $('#dialogoInput');
+var db = $('#dialogBuscando');
+$('#dialogCliente').on('show.bs.modal', function () {
+  dc.val('');
+  dr.find('TR').remove();
+	$(this).find("[autofocus]:first").focus();
+	$('#dialogButton').unbind('click').click(function(event){
+		event.preventDefault();
+		var l = $.trim(dc.val());
+		if(l.length > 0)
+		{
+			dr.find('TR').remove();
+			db.html('Buscando...').fadeIn();
+			$.post('<?=path()?>herramientas/cliente_busqueda/', { cliente: l }, function(data){
+				if(data.error == 0)
+				{
+					dr.show();
+					db.hide();
+					for(i in data.clientes[0])
+					{
+						var d = data.clientes[0][i];
+						var l = '<tr><td class="negritas">' + d.id + '</td><td>' + d.nombre + '</td><td><a href="#" class="elegir" data-id="' + d.id + '" title="Elegir este cliente"><span class="glyphicon glyphicon-ok"></span></a></td></tr>';
+						dr.append(l);
+					}
+					dr.find('A').each(function(){
+						$(this).click(function(){
+							event.preventDefault();
+							$('#dialogCliente').modal('hide');
+							$('#cliente').val($(this).data().id).blur();
+						});
+					});
+				}
+				else
+				{
+					db.html('No se encontraron coincidencias.').fadeIn();
+				}
+			});
+		}
+	});
+});
+
+//Esconder cosas de productos
+function pesconder()
+{	
+	pp.removeClass('panel-info').addClass('panel-default');
+	pa.show();
+	$('._pr').hide();
+}
+
+//Buscar datos de un cliente
+function datosCliente(l)
+{
+	var f = $('#fecha').val();
+	$.getJSON('<?=path()?>herramientas/cliente_data/' + l + '/' + f + '<?=suffix()?>', function(data){
+		cd.empty();
+		var ce = $('#clienteError');
+		if(data.error == 0)
+		{
+			var d = data.cliente;
+			cliente = d.id;
+			if(d.status == '0')
+			{
+				if(d.productos.length > 0)
+				{
+					ce.hide();
+					pa.hide();
+					pp.removeClass('panel-default').addClass('panel-info');
+					$('._pr').show();
+					
+					//Mostrar datos de este cliente
+					var tel_mail = '';
+					if(d.tel.length > 0) tel_mail += 'Tel ' + d.tel;
+					if(d.email.length > 0 && d.tel.length == 0) tel_mail = d.email;
+					if(d.email.length > 0 && d.tel.length > 0) tel_mail += ', ' + d.email;
+					if(tel_mail.length > 0) tel_mail = '<br>' + tel_mail;
+					cd.html('<b>' + d.nombre + '</b><br>' + d.direccion_formateada + tel_mail).fadeIn();
+					
+					//Dibujar tabla con sus productos
+					cliente_productos = d.productos;
+					$('#_tbodyFuegoCentral, #_tbodyCartuchoEscopeta').empty();
+					$('#_tbodyFuegoCentral_h, #_tbodyCartuchoEscopeta_h').hide();
+					
+					//Esconder línea que no se encuentre en las categorías asignadas a este cliente
+					$(cliente_productos).each(function(){
+						var d = this;
+						for(var imd5 in categorias)
+						{
+							for(var cp in categorias[imd5])
+							{
+								if(d.categoria == categorias[imd5][cp].id)
+								{
+									if(categorias[imd5][cp].linea == 'Fuego central')
+									{
+										$('#_tbodyFuegoCentral_h').show();
+									}
+									else
+									{
+										$('#_tbodyCartuchoEscopeta_h').show();
+									}
+								}
+							}
+						}
+					});
+				}
+				else
+				{
+					ce.html('<span class="marginRight6 glyphicon glyphicon-question-sign"></span> Este cliente no tiene productos disponibles').show();
+					setTimeout(function(){ ce.hide('.') }, 2000);
+					pesconder()
+				}
+			}
+			else
+			{
+				ce.html('<span class="marginRight6 glyphicon glyphicon-question-sign"></span> Este cliente está desactivado').show();
+				setTimeout(function(){ ce.hide('.') }, 2000);
+				pesconder()
+			}
+		}
+		else
+		{
+			ce.html('<span class="marginRight6 glyphicon glyphicon-question-sign"></span> El cliente no existe').show();
+			setTimeout(function(){ ce.hide('.') }, 2000);
+			pesconder()
+		}
+	});
+}
+
+//Agregar renglón de producto
+$('.agregar_producto').click(function(){
+	event.preventDefault();
+	var b = $(this);
+	var linea = b.data('linea');
+	var tbody = b.data('tbody');
+	
+	$(cliente_productos).each(function(){
+		var d = this;
+		
+		//Generar selectables por categoría y producto
+		var s_cat = '';
+		for(ic in categorias)
+		{
+			for(icp in categorias[ic])
+			{
+				if(d.categoria == categorias[ic][icp].id && d.linea == linea)
+				{
+					s_cat = categorias[ic][icp].descripcion;
+				}
+			}
+		}
+		
+		//Generar SELECT de categorías
+		var select_categoria = $('<select name="categoria[]" class="form-control"></select>');
+		for(var i in cliente_productos)
+		{
+			for(var cp in cliente_productos)
+			{
+				for(var imd5 in categorias)
+				{
+					for(var ci in categorias[imd5])
+					{
+						if(cliente_productos[cp].categoria == categorias[imd5][ci].id && cliente_productos[cp].linea == linea)
+						{
+							var usado = 0;
+							select_categoria.find('OPTION').each(function(){
+								if($(this).val() == categorias[imd5][ci].id) usado++;
+							});
+							if(usado == 0) select_categoria.append('<option value="' + categorias[imd5][ci].id + '">' + categorias[imd5][ci].descripcion + '</option>');
+						}
+					}
+				}
+			}
+		}
+		
+		var select_registros = $('<select name="registro[]" class="form-control"></select>');
+		var select_productos = $('<select name="producto[]" class="form-control"></select>');
+		select_categoria.change(function(){
+			//Generar SELECT de registros
+			select_registros.empty();
+			var t = $(this);
+			for(var cp in cliente_productos)
+			{
+				if(cliente_productos[cp].categoria == t.val())
+				{
+					var usado = 0;
+					select_registros.find('OPTION').each(function(){
+						if($(this).val() == cliente_productos[cp].categoria) usado++;
+					});
+					if(usado == 0) select_registros.append('<option data-disponible="' + cliente_productos[cp].disponible + '">' + cliente_productos[cp].registro + '</option>');
+				}
+			}
+			select_registros.change();
+			
+			//Generar SELECT de productos
+			select_productos.empty();
+			var t = $(this);
+			for(var cp in productos)
+			{
+				if(productos[cp].categoria == t.val())
+				{
+					var usado = 0;
+					select_productos.find('OPTION').each(function(){
+						if($(this).val() == productos[cp].id) usado++;
+					});
+					if(usado == 0) select_productos.append('<option data-precio="' + productos[cp].precio + '" value="' + productos[cp].id + '">' + productos[cp].descripcion + '</option>');
+				}
+			}
+			select_productos.change();
+			
+		}).change();
+			
+		var t = $('<tr class="tr_producto">'
+						+	'	<td class="categorias"></td>'
+						+	'	<td class="registros"></td>'
+						+	'	<td class="text-right productos"></td>'
+						+	'	<td class="text-right disponible"></td>'
+						+	'	<td><input name="cantidad[]" class="form-control numerico_entero text-right tdIva" type="number" value="1" /></td>'
+						+	'	<td class="text-right precio"></td>'
+						+	'	<td><input name="total[]" class="form-control numerico_decimal text-right tdTotal" type="number" value="0.00" step="any" /></td>'
+						+	'	<td class="text-center"><a href="#" class="btn btn-danger btn-xs eliminar_producto" title="Elimine este producto del catálogo"><span class="glyphicon glyphicon-minus"></span></a></td>'
+						+	'</tr>');
+		t.data({
+			tope: parseInt(d.tope),
+			iva: 16
+		});
+		
+		//Agregar categorias
+		t.find('.categorias').append(select_categoria);
+		
+		//Agregar registros
+		t.find('.registros').append(select_registros);
+		select_registros.change(function(){
+			t.find('.disponible').html($(this).find('option:selected').data('disponible'))
+		}).change();
+		
+		//Agregar productos
+		t.find('.productos').append(select_productos);
+		select_productos.change(function(){
+			var pr = $(this).find('option:selected').data('precio');
+			t.find('.precio').html(money(pr));
+			t.find('[name="total[]"]').val(pr);
+		}).change();
+		
+		//Agregar a la tabla
+		$('#' + tbody).append(t);
+		
+		//Eventos de cálculos
+		t.find('[name="cantidad[]"]').change(function(){
+			var cantidad = Math.abs(parseInt($(this).val()));
+			$(this).val(cantidad);
+		});
+		
+		t.find('[name="total[]"]').change(function(){
+			var valor = Math.abs(parseFloat($(this).val())).toFixed(2);
+			$(this).val(valor);
+		});
+		
+		t.find('[name="cantidad[]"], [name="total[]"]').change(function(){
+			sumatoria();
+		}).first().change();
+		
+		sinDecimal(t.find('[name="cantidad[]"]'));
+		dosDecimales(t.find('[name="total[]"]'));
+		
+		//Eliminador de productos
+		t.find('.eliminar_producto').click(function(){
+			event.preventDefault();
+			t.remove();
+			sumatoria();
+		});
+		
+		return false;
+	});
+});
+
+//Calcular importes
+function sumatoria()
+{
+	if($('.tr_producto').size() > 0)
+	{
+		var _total = 0;
+		$('.tr_producto').each(function(){
+			var t = $(this);
+			var precio = 0;
+			var cantidad = parseInt(t.find('[name="cantidad[]"]').val());
+			var total = parseFloat(t.find('[name="total[]"]').val());
+			if(cantidad > 0)
+			{
+				var precio = ( total / cantidad ).toFixed(2);
+				t.find('.precio').html(money(precio));
+				_total += total;
+			}
+			else
+			{
+				t.find('.precio').html('0.00');
+			}
+		});
+		$('#Ttotal').html(money(_total));
+	}
+	else
+	{
+		$('#Ttotal').html(0.00);
+	}
+}
+
+//Validar formulario
+$('#formRecord').submit(function(){
+	var c = $('#cliente').val();
+	if(c.length == 0 || parseInt(c) == 0)
+	{
+		alert('El cliente no ha sido definido.');
+		$('#cliente').focus();
+		return false;
+	}
+	
+	var f = $('#fecha').val();
+	if(f.length == 0 || !/^\d{4}-\d{2}-\d{2}$/.test(f))
+	{
+		alert('La fecha de esta venta no ha sido definida.');
+		$('#cliente').focus();
+		return false;
+	}
+	
+	var articulos = 0;
+	sumatoria()
+	$('[name="cantidad[]"]').each(function(){
+		 articulos += parseInt($.trim($(this).val()));
+	});
+	
+	if(articulos == 0)
+	{
+		alert('No hay productos asignados a esta venta.');
+		return false;
+	}
+	
+	if(parseFloat($('#Ttotal').text().replace(',', '')) == 0)
+	{
+		alert('No hay valores asignados a esta venta.');
+		return false;
+	}
+	
+	//Validar que no se excedan las cantidades según la disponibilidad de sus registros
+	var registros = [];
+	var usado = 0;
+	$('[name="registro[]"]').each(function(){
+		registros[$(this).val()] = { disponible: $(this).find('option:selected').data('disponible'), cantidad: 0 };
+	});
+	
+	$('.tr_producto').each(function(){
+		var t = $(this);
+		var cantidad = parseInt(t.find('[name="cantidad[]"]').val());
+		var registro = t.find('[name="registro[]"]').val();
+		registros[registro].cantidad += cantidad;
+	});
+	
+	for(var reg in registros)
+	{
+		if(registros[reg].disponible < registros[reg].cantidad)
+		{
+			alert('El cantidad solicitadas de productos en el registro ' + reg + ' excede su disponibilidad actual. Verifique la información e intente nuevamente.');
+			usado++;
+		}
+	}
+	if(usado > 0)
+	{
+		return false;
+	}
+	else
+	{
+		$('#submitter').addClass('disabled');
+	}
+});
+</script>

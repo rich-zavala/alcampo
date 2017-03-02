@@ -1,0 +1,367 @@
+<div class="row">
+	<div class="col-sm-9">
+		<h2 class="moduloHeader"><span><?=$titulo?></span></h2>
+	</div>
+	<div class="col-sm-3 text-right marginTop20">
+		<a class="btn btn-default pull-right" href="<?=path()?><?=$controlador?><?=suffix()?>"><span class="marginRight6 glyphicon glyphicon-chevron-left"></span> Regresar al listado</a>
+	</div>
+</div>
+
+<hr>
+
+<?php
+//Mensaje de evento
+if(isset($evento)){
+?>
+<div class="alert alert-<?=(!isset($error)) ? 'success' : 'danger'?> alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<?=$evento?>
+</div>
+<?php } ?>
+
+<ul class="nav nav-tabs" id="myTab">
+  <li><a href="#info" data-toggle="tab">Información</a></li>
+  <li><a href="#imagenes" data-toggle="tab">Expediente digital</a></li>
+</ul>
+
+<div class="tab-content marginTop10">
+	<div class="tab-pane" id="info">
+		<form class="form" role="form" action="<?=path()?><?=$controlador?>/registro<?=suffix()?>" id="formRecord" method="post">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">Información del cliente</div>
+						<div class="panel-body">
+							<?php if(isset($info['id']) and !is_null($info['id'])): ?>
+							<div class="form-group">
+								<label for="id" class="control-label">ID</label>
+								<input type="text" class="form-control" id="id" name="id" value="<?=$info['id']?>" readonly>
+							</div>
+							<?php endif ?>
+							<div class="form-group">
+								<label for="nombre" class="control-label">Nombre</label>
+								<input type="text" class="form-control" id="nombre" name="nombre" value="<?=$info['nombre']?>" placeholder="Ingrese el nombre completo del cliente" autofocus required>
+							</div>
+							<div class="form-group">
+								<label for="email" class="control-label">Email</label>
+								<input type="email" class="form-control" id="email" name="email" value="<?=$info['email']?>" placeholder="Ingrese su email">
+							</div>
+							<div class="form-group">
+								<label for="tel" class="control-label">Teléfono</label>
+								<input type="tel" class="form-control" id="tel" name="tel" value="<?=$info['tel']?>" placeholder="Ingrese su teléfono(s)">
+							</div>
+							<div class="form-group">
+								<label for="tel" class="control-label">Dirección</label>
+								<textarea name="direccion" class="form-control" rows="4"><?=$info['direccion']?></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">Categorías asignadas</div>
+						<div class="panel-body">
+							<table id="categoriasTabla" class="table table-striped table-bordered table-condensed table-hover <?=(count($categorias) == 0) ? 'hid' : ''?>" id="tabla">
+								<thead>
+									<tr class="active table-border-top-tr">
+										<th width="18%">Calibre</th>
+										<th width="28%">Registro</th>
+										<th width="20%">Tope</th>
+										<th width="24%" nowrap>Tipo de tope</th>
+										<th width="10%"></th>
+									</tr>
+								</thead>
+								<?php
+								foreach($catalogo as $linea_data)
+								{
+									$hid = 0;
+									//p($linea_data); exit;
+									foreach($linea_data['categorias'] as $lp)
+									{
+										foreach($categorias as $p)
+										{
+											if($p['categoria'] == $lp['id'])
+											{
+												$hid++;
+											}
+										}
+									}
+								?>
+								<thead id="t<?=md5($linea_data['linea'])?>" class="<?=($hid == 0) ? 'hid' : ''?>">
+									<tr class="lineaHeader table-border-top-tr table-tr-primary">
+										<th colspan="5"><?=$linea_data['linea']?></th>
+									</tr>
+								</thead>
+								<tbody id="l<?=md5($linea_data['linea'])?>">
+									<?php
+									foreach($linea_data['categorias'] as $lp)
+									{
+										$valor = 0;
+										$tipo_a = '';
+										foreach($categorias as $p)
+										{
+											if($p['categoria'] == $lp['id'])
+											{
+												$valor = $p['tope'];
+												$tipo_a = ($p['tipo'] == 'anual') ? 'selected' : '';
+									?>
+									<tr>
+										<td class="negritas vmiddle" nowrap><?=$lp['descripcion']?></td>
+										<td class="text-center">
+											<input type="hidden" class="form-control" name="categoria[]" value="<?=$p['categoria']?>" />
+											<input type="text" class="form-control" name="registro[]" value="<?=$p['registro']?>" placeholder="Código de registro" required />
+										</td>
+										<td class="text-center"><input type="number" class="form-control numerico_entero" name="tope[]" value="<?=$valor?>" required /></td>
+										<td class="text-center">
+											<select name="tipo[]" class="form-control">
+												<option value="mensual">Mensual</option>
+												<option value="anual" <?=$tipo_a?>>Anual</option>
+											</select>
+										</td>
+										<td class="text-center vmiddle">
+											<button class="btn btn-danger btn-xs eliminarCategoria"><span class="glyphicon glyphicon-minus-sign"></span></button>
+										</td>
+									</tr>
+									<?php
+											}
+										}
+									}
+									?>
+								</tbody>
+								<?php } ?>
+							</table>
+							
+							<div id="categoriasWarning" class="alert alert-warning  <?=(count($categorias) > 0) ? 'hid' : ''?>"><span class="marginRight6 glyphicon glyphicon-info-sign"></span>Aún no se han asignado categorías a este cliente</div>
+							
+							<center>
+								<button class="btn btn-success btn-sm" data-toggle="modal" data-target="#myModal"><span class="marginRight6 glyphicon glyphicon-plus"></span>Agregar registro de categoría</button>
+							</center>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="alert alert-warning hid"></div>
+			<div class="well text-center">
+				<button class="btn btn-primary btn-lg"><span class="marginRight6 glyphicon glyphicon-floppy-open"></span> Registrar <?=(isset($edicion)) ? 'cambios' : 'nuevo cliente'?></button>
+			</div>
+		</form>
+	</div>
+	<div class="tab-pane" id="imagenes">
+		<?php
+		if($edicion)
+		{
+			if(count($imagenes) > 0)
+			{
+				echo '<div class="row">';
+				foreach($imagenes as $k => $imagen)
+				{
+					$full = str_replace('_thumb', '', $imagen);
+		?>
+			<div class="col-sm-3">
+				<div class="thumbnail" data-id="">
+					<div class="thumbnail-img text-center marginTop10">
+						<a href="<?=path()?><?=$full?>" target="_img<?=$imagen?>" title="Vea este expediente en su tamaño completo">
+							<img src="<?=path()?><?=$imagen?>">
+						</a>
+					</div>
+					<div class="caption text-center ">
+						<div class="btn-group btn-group-sm">
+							<a href="<?=path()?><?=$full?>" target="_img<?=$imagen?>" class="btn btn-default" role="button" title="Vea este expediente en su tamaño completo"><span class=" glyphicon glyphicon-new-window"></span></a>
+							<a href="#" class="btn btn-danger imgDel" role="button" title="Elimine esta imagen del expediente" data-img="<?=$full?>" data-thumb="<?=$imagen?>"><span class=" glyphicon glyphicon-trash"></span></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		<?php
+				}
+				echo '</div><hr>';
+			}
+			else
+			{
+		?>
+		<div class="alert alert-danger">
+			<span class="marginRight6 glyphicon glyphicon-info-sign"></span>
+			No existen imágenes en este expediente. Elija las imágenes para subirlas al sistema.
+		</div>
+		<?php
+			}
+		?>
+		<div class="well well-sm">
+			<h4>Suba los archivos que conforman este expediente</h4>
+			<hr>
+			<form class="form" role="form" action="<?=path()?><?=$controlador?>/imagenes<?=suffix()?>" method="post"  enctype="multipart/form-data">
+				<input type="hidden" class="form-control" id="idImg" name="id" value="<?=$info['id']?>" readonly>
+				<input type="file" name="imagenes[]" multiple="multiple">
+				<button type="submit" class="btn btn-success marginTop10"><span class="marginRight6 glyphicon glyphicon-cloud-upload"></span> Subir archivos seleccionados</button>
+			</form>
+		</div>
+		<?php
+		}
+		else
+		{
+		?>
+		<div class="alert alert-warning">
+			<span class="marginRight6 glyphicon glyphicon-info-sign"></span> 
+			Para ingresar imágenes en el expediente digital es necesario registrar al cliente previamente.
+		</div>
+		<?php
+		}
+		?>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Elija la categoría que se asignará</h4>
+      </div>
+      <div class="modal-body" style="height: 400px; overflow: auto;">
+        <table class="table table-striped table-bordered table-condensed table-hover">
+					<?php
+					$k = 0;
+					foreach($catalogo as $linea_data)
+					{
+					?>
+					<thead>
+						<tr class="lineaHeader table-border-top-tr table-tr-primary">
+							<th colspan="2"><?=$linea_data['linea']?></th>
+						</tr>
+					</thead>
+					<tbody>
+						<?php
+						foreach($linea_data['categorias'] as $lp)
+						{
+						?>
+						<tr>
+							<td class="negritas" width="90%"><?=$lp['descripcion']?></td>
+							<td class="text-center">							
+								<button class="btn btn-primary btn-sm elegirCategoria" data-linea="<?=md5($linea_data['linea'])?>" data-categoria="<?=$lp['id']?>" data-descripcion="<?=$lp['descripcion']?>"><span class=" glyphicon glyphicon-check"></span></button>
+							</td>
+						</tr>
+						<?php
+						}
+						?>
+					</tbody>
+					<?php
+					}
+					?>
+				</table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+//Eliminar categoria
+$('.eliminarCategoria').click(function(){
+	event.preventDefault();
+	var t = $(this);
+	if(confirm('Confirme la eliminación de esta categoría en el expediente.')) t.parents('TR').fadeOut().find('*').attr('disabled', true).val('');
+});
+
+//Elegir categorias
+$('.elegirCategoria').click(function(){
+	event.preventDefault();
+	var t = $(this);
+	var d = t.data();
+	var tr = $('<tr>'
+					+'		<td class="negritas vmiddle" nowrap>' + d.descripcion + '</td>'
+					+'		<td class="text-center">'
+					+'			<input type="hidden" class="form-control" name="categoria[]" value="' + d.categoria + '" />'
+					+'			<input type="text" class="form-control" name="registro[]" placeholder="Código de registro" required />'
+					+'		</td>'
+					+'		<td class="text-center"><input type="number" class="form-control numerico_entero" name="tope[]" required /></td>'
+					+'		<td class="text-center">'
+					+'			<select name="tipo[]" class="form-control">'
+					+'				<option value="mensual">Mensual</option>'
+					+'				<option value="anual">Anual</option>'
+					+'			</select>'
+					+'		</td>'
+					+'		<td class="text-center vmiddle">'
+					+'			<button class="btn btn-danger btn-xs eliminarCategoria"><span class="glyphicon glyphicon-minus-sign"></span></button>'
+					+'		</td>'
+					+'	</tr>');
+	$('#t' + t.data('linea')).show();
+	$('#l' + t.data('linea')).append(tr);
+	
+	$('#categoriasTabla').show();
+	$('#categoriasWarning').hide();
+	
+	tr.find('.numerico_entero').each(function(){ sinDecimal(this); });
+	$('#myModal').modal('hide')
+});
+
+//Agregar campo de error
+function err(o)
+{
+	o.parents('.form-group').addClass('has-error');
+}
+
+//Mostrar errores
+function noti(form, msg)
+{
+	form.find('.alert-warning').html(msg).show();
+}
+
+//Numéricos
+$('.numerico_entero').each(function(){ sinDecimal(this); });
+
+$('#formulario').submit(function(event){
+	var t = $(this);
+	t.find(':input').parents('.form-group').removeClass('has-error');
+	t.find('.alert-warning').hide();		
+	t.find(':input[required]').each(function(){ //Todos los campos llenos
+		var f = $(this);
+		var a = f.attr('id');
+		f.val($.trim(f.val()));
+		if(a != 'calle' && a != 'numero' && a != 'cp' && f.val().length < 5)
+		{
+			err(f);
+			noti(t, 'La información en el campo "' + f.parent().find('LABEL').text() + '" debe contener un mínimo de 6 caracteres.');
+			event.preventDefault();
+		}
+	});
+});
+
+//Inicialización de tabs
+$('#myTab a').click(function (e) {
+	e.preventDefault()
+	$(this).tab('show')
+}).first().click();
+
+if(window.location.hash) {
+	var hash = window.location.hash.substring(1); //Puts hash in variable, and removes the # character
+	if(hash == 'expediente') $('#myTab a').last().click();
+}
+
+//Eliminar img
+$('.imgDel').click(function(){
+	event.preventDefault();
+	t = $(this);
+	d = t.parents('.thumbnail');
+	if(confirm('Confirme la eliminación de esta imagen.\nEsta acción no podrá deshacerse.'))
+	{
+		$.ajax({
+			url: path + 'herramientas/imagen_eliminar' + suffix,
+			method: 'post',
+			data: {
+				imagen: t.data('img'),
+				thumb: t.data('thumb')
+			},
+			success: function(data){ d.parents('.col-sm-3').hide('clip'); },
+			error: function()
+			{
+				alert('Existe un error en el servidor o en el inicio de sesión.\nPor favor, salga del sistema e intente nuevamente.');
+			}
+		});
+	}
+});
+
+</script>

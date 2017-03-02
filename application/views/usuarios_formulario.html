@@ -1,0 +1,257 @@
+<div class="row">
+	<div class="col-sm-9">
+		<h2 class="moduloHeader"><span><?=$titulo?></span></h2>
+	</div>
+	<div class="col-sm-3 text-right marginTop20">
+		<a class="btn btn-default pull-right" href="<?=path()?><?=$controlador?><?=suffix()?>"><span class="marginRight6 glyphicon glyphicon-chevron-left"></span> Regresar al listado</a>
+	</div>
+</div>
+
+<hr>
+
+<?php
+//Mensaje de evento
+if(isset($evento)){
+?>
+<div class="alert alert-<?=(!isset($error)) ? 'success' : 'danger'?> alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<?=$evento?>
+</div>
+<?php } ?>
+
+<?php if(isset($edicion)): ?>
+<ul class="nav nav-tabs" id="myTab">
+	<li><a href="#info" data-toggle="tab">Información y permisos</a></li>
+	<li><a href="#password" data-toggle="tab">Cambiar contraseña</a></li>
+</ul>
+
+<div class="tab-content">
+	<div class="tab-pane fade active" id="info">
+		<?php endif ?>
+	
+		<form class="form marginTop10" role="form" action="<?=path()?><?=$controlador?>/registro<?=suffix()?>" id="formRecord" method="post">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">Información del usuario</div>
+						<div class="panel-body">
+							<div class="form-group">
+								<label for="user" class="control-label">Usuario</label>
+								<input type="text" class="form-control" id="user" name="user" value="<?=$info['user']?>" <?=(isset($edicion)) ? 'readonly' : 'autofocus' ?> placeholder="Ingrese el nombre del usuario para ingresar" required>
+							</div>
+							<div class="form-group">
+								<label for="nombre" class="control-label">Nombre</label>
+								<input type="text" class="form-control" id="nombre" name="nombre" value="<?=$info['nombre']?>" <?=(isset($edicion)) ? 'autofocus' : '' ?> placeholder="Ingrese el nombre de la persona" required>
+							</div>
+							<div class="form-group">
+								<label for="email" class="control-label">Email</label>
+								<input type="email" class="form-control" id="email" name="email" value="<?=$info['email']?>" placeholder="Ingrese su email">
+							</div>
+							<?php if(!isset($edicion)): ?>
+							<div class="form-group">
+								<label for="pass" class="control-label">Contraseña</label>
+								<input type="password" class="form-control" id="pass" name="pass" placeholder="Ingrese una contraseña" required>
+							</div>
+							<div class="form-group" class="control-label">
+								<label for="pass2" class="control-label">Confirme contraseña</label>
+								<input type="password" class="form-control" id="pass2" name="pass2" placeholder="Ingrese la confirmación de contraseña" required>
+							</div>
+							<?php endif ?>
+						</div>
+					</div>
+					<div class="panel panel-primary">
+						<div class="panel-heading">Series de venta y reportes</div>
+						<div class="panel-body">
+							<?php
+							foreach($series as $s)
+							{
+								//p($info['series']);
+								$mchecked = (@in_array($s, $info['series'])) ? 'checked' : '';
+							?>
+							<div class="checkbox negritas">
+								<label>
+									<input type="checkbox" class="series" name="series[]" value="<?=$s?>" <?=$mchecked?>>
+									<b>Serie <?=$s?></b>
+								</label>
+							</div>
+							<?php } ?>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">Permisos de sistema</div>
+						<div class="panel-body">
+							<?php
+							foreach($modulos as $modulo => $m)
+							{
+								$mchecked = (isset($p[$modulo])) ? 'checked' : '';
+								$mchecked = (isset($p[$modulo]) and in_array('consultar', $p[$modulo])) ? 'checked' : '';
+							?>
+								<div class="permiso">
+									<div class="checkbox negritas">
+										<label>
+											<input type="checkbox" class="permisoModulo" name="permisos[<?=$modulo?>][]" value="consultar" <?=$mchecked?>>
+											<b><?=$m['titulo']?></b>
+										</label>
+									</div>
+									<div class="marginLeft20">
+									<?php
+									if(isset($m['permisos'])):
+										foreach($m['permisos'] as $value => $label)
+										{
+											$pchecked = (isset($p[$modulo]) and in_array($value, $p[$modulo])) ? 'checked' : '';
+									?>
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" class="permisoDetalle" name="permisos[<?=$modulo?>][]" value="<?=$value?>" <?=$pchecked?> disabled>
+												<?=$label?>
+											</label>
+										</div>
+									<?php
+										}
+									endif;
+									?>
+									</div>
+								</div>
+							<?php
+							}
+							?>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="alert alert-warning hid"></div>
+			<div class="well text-center">
+				<button class="btn btn-primary btn-lg"><span class="marginRight6 glyphicon glyphicon-floppy-open"></span> Registrar <?=(isset($edicion)) ? 'cambios' : 'nuevo usuario'?></button>
+			</div>
+		</form>
+	<?php if(isset($edicion)): ?></div><?php endif ?>
+	
+	<?php if(isset($edicion)): ?>
+	<div class="tab-pane fade" id="password">
+		<form class="form marginTop10" role="form" action="<?=path()?><?=$controlador?>/cambiar_password<?=suffix()?>" id="formPass" method="post">
+			<div class="row">
+				<div class="col-sm-6">
+						<div class="panel panel-primary">
+							<div class="panel-heading">Cambie la contraseña de este usuario</div>
+							<div class="panel-body">
+								<div class="form-group">
+									<label for="passc" class="control-label">Contraseña</label>
+									<input type="password" class="form-control" id="passc" name="pass" placeholder="Ingrese una contraseña" required>
+								</div>
+								<div class="form-group">
+									<label for="passc2" class="control-label">Confirme contraseña</label>
+									<input type="password" class="form-control" id="passc2" name="pass2" placeholder="Ingrese la confirmación de contraseña" required>
+								</div>
+							</div>
+						</div>
+				</div>
+			</div>
+			<div class="alert alert-warning hid"></div>
+			<div class="well text-center">
+				<button class="btn btn-primary btn-lg"><span class="marginRight6 glyphicon glyphicon-floppy-open"></span> Registrar cambio de contraseña</button>
+			</div>
+		</form>
+	</div>
+	<?php endif ?>
+<?php if(isset($edicion)): ?></div><?php endif ?>
+
+<script>
+	//Inicialización de tabs
+	$('#myTab a').click(function (e) {
+		e.preventDefault()
+		$(this).tab('show')
+	}).first().click();
+	
+	//Agregar campo de error
+	function err(o)
+	{
+		o.parents('.form-group').addClass('has-error');
+	}
+	
+	//Validación de confirmación de contraseña
+	function validarPass(form)
+	{
+		var p = form.find('[type="password"]')
+		var p1 = p.first();
+		var p2 = p.last();
+		if(p1.val() != p2.val())
+		{
+			err(p1);
+			err(p2);
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	//Mostrar errores
+	function noti(form, msg)
+	{
+		form.find('.alert-warning').html(msg).show();
+	}
+	
+	//Funciones de click en permiso
+	$('.permisoModulo').change(function(){
+		var t = $(this);
+		var d = t.parents('.permiso').find('.permisoDetalle');
+		if(t.is(':checked'))
+		{
+			d.attr('disabled', false);
+		}
+		else
+		{
+			d.attr('disabled', true);
+		}
+	}).trigger('change');
+	
+	$('.form').submit(function(event){
+		var t = $(this);
+		t.find(':input').parents('.form-group').removeClass('has-error');
+		t.find('.alert-warning').hide();
+		
+		if(t.find(':password').size() > 0) //Formulario con passwords para validar
+		{
+			var p1 = t.find('[type="password"]').first();
+			if(p1.val().length < 6)
+			{
+				err(p1);
+				noti(t, 'La contraseña debe de contener un mínimo de 6 caracteres.');
+				event.preventDefault();
+			}
+			if(!validarPass(t)) //Validar confirmación de contraseña
+			{
+				noti(t, 'Las contraseñas no coinciden. Verifique la información.');
+				event.preventDefault();
+			}
+		}
+
+		if(t.attr('id') == 'formRecord') //Formulario de permisos
+		{
+			if($('.permisoModulo:not(:disabled):checked').size() == 0) //Mínimo de permisos
+			{
+				noti(t, 'Especifique los permisos de sistema que serán asignados a este usuario.');
+				event.preventDefault();
+			}
+			if($('.series:not(:disabled):checked').size() == 0) //Mínimo de permisos
+			{
+				noti(t, 'Especifique las series de venta.');
+				event.preventDefault();
+			}
+		}
+		
+		t.find(':input[required]').each(function(){ //Todos los campos llenos
+			var f = $(this);
+			f.val($.trim(f.val()));
+			if(f.val().length < 5)
+			{
+				err(f);
+				noti(t, 'La información en el campo "' + f.parent().find('LABEL').text() + '" debe contener un mínimo de 6 caracteres.');
+				event.preventDefault();
+			}
+		});
+	});
+</script>

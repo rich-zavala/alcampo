@@ -1,0 +1,30 @@
+<link href="<?=path()?>/r_/css/pdf.css" rel="stylesheet">
+<link href="<?=base_url()?>r_/css/comun.css" rel="stylesheet">
+<style>
+	body, html{ margin: 5px; }
+	td{ vertical-align: center; padding: 4px !important; }
+	#logoLetras{ font-size: 54px; }
+	*{ color: black; }
+	@media print{ .noprint { display: none; } }
+	tr{ page-break-inside: avoid; }
+</style>
+
+<div id="logoContainer" style="height: 84px;">
+	<div id="logoLetras">Alcampo</div>
+	<div id="logoLetrasChicas">
+		<b>Distribuidora Alcampo de Merida S.A. de C.V.</b>
+	</div>
+</div>
+REPORTE DE VENTAS DEL DÍA <?=$fecha?>
+<div class="dataContenedor">
+	<table class="table table-striped dataTable font9 table_reporte" width="100%" border="1" bordercolor="#DDD">
+		<?=$tabla?>
+	</table>
+</div>
+<script>
+window.print();
+window.onfocus = function(){ window.close(); }
+window.onclick = function(){ window.close(); }
+window.onafterprint = function(){ window.close(); }
+$('body').focus(function(){ window.close(); });
+</script>

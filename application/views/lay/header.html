@@ -1,0 +1,40 @@
+<div class="topBG" id="loginBody"></div>
+<div class="fluid">
+	<div class="row">
+		<div class="col-md-12">
+			<img class="pull-left" src="<?=path()?>r_/img/logo.png">
+			<div class="pull-right">
+				<div class="text-right">
+					<h4><?=$this->session->userdata('nombre')?> <span class="glyphicon glyphicon-user"></span></h4>
+					<a class="btn btn-warning btn-xs" href="<?=path()?>">Cerrar sesión <span class="marginLeft4 glyphicon glyphicon-off"></span></a>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-lg-12">
+			<nav class="navbar navbar-inverse marginTop10" role="navigation">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Mostrar/Ocultar menú</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<?php $current = $this->router->class; ?>
+						<?php if($this->moguardia->permitido('consultar', 'ventas')): ?><li class="<?=active('ventas', $current)?>"><a href="<?=path()?>ventas<?=suffix()?>"><span class="marginRight6 glyphicon glyphicon-tags"></span> Ventas</a></li><?php endif ?>
+						<?php if($this->moguardia->permitido('consultar', 'clientes')): ?><li class="<?=active('clientes', $current)?>"><a href="<?=path()?>clientes<?=suffix()?>"><span class="marginRight6 glyphicon glyphicon-briefcase"></span> Clientes</a></li><?php endif ?>
+						<?php if($this->moguardia->permitido('consultar', 'reportes')): ?><li class="<?=active('reportes', $current)?>"><a href="<?=path()?>reportes<?=suffix()?>"><span class="marginRight6 glyphicon glyphicon-list"></span> Reportes</a></li><?php endif ?>
+						<?php if($this->moguardia->permitido('consultar', 'respaldos')): ?><li class="<?=active('respaldos', $current)?>"><a href="<?=path()?>respaldos<?=suffix()?>"><span class="marginRight6 glyphicon glyphicon-saved"></span> Respaldos</a></li><?php endif ?>
+						<?php if($this->moguardia->permitido('consultar', 'productos')): ?><li class="<?=active('productos', $current)?>"><a href="<?=path()?>productos<?=suffix()?>"><span class="marginRight6 glyphicon glyphicon-envelope"></span> Productos</a></li><?php endif ?>
+						<?php if($this->moguardia->permitido('consultar', 'usuarios')): ?><li class="<?=active('usuarios', $current)?>"><a href="<?=path()?>usuarios<?=suffix()?>"><span class="marginRight6 glyphicon glyphicon-user"></span> Usuarios</a></li><?php endif ?>
+					</ul>
+				</div>
+			</nav>
+		</div>
+	</div>
+	

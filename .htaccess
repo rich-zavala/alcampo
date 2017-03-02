@@ -1,0 +1,10 @@
+RewriteEngine on
+#Req de goDaddy
+RewriteCond %{REQUEST_FILENAME} !-f
+#Req de goDaddy
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond $1 !^(index.php|robots.txt|missing.html|r_|stats|cgi|error)
+#Con goDaddy es necesario usar ?/ y no solo /
+RewriteRule ^(.*)$ /alcampo/index.php?/$1 [L]
+ErrorDocument 403 /error/pm403.php
+ErrorDocument 404 /error/pm404.php

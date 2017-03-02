@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  <head>
+		<meta http-equiv="Content-type" value="text/html; charset=UTF-8" >
+    <title>Alcampo - Nota de venta</title>
+		<style>
+		<?php include 'r_/css/pdf.css'; ?>
+		</style>
+  </head>
+  <body>
+	<div class="container">
+		<div id="logoContainer">
+			<div id="logoLetras">Alcampo</div>
+			<div id="logoLetrasChicas">
+				<b>Distribuidora Alcampo de Merida S.A. de C.V.</b><br>
+				Régimen general de ley de las personas morales
+			</div>
+			<div id="linea"></div>
+			<div id="logoDireccion">
+				CALLE 61 No. 469 LOCALES "A" Y "B"<br>
+				TEL. Y FAX  928-2853 C.P. 97000<br>
+				MERIDA, YUCATAN, MEXICO<br>
+				EMAIL: alcampomerida@hotmail.com<br>
+			</div>
+		</div>
+		
+		<div class="dataContenedor">
+			<table width="100%" cellpadding="0" cellspacing="0">
+				<tr>
+					<td width="74%" valign="top">
+						<b class="font18"><?=$cliente['nombre']?></b><br>
+						<?=$cliente['direccion_formateada']?>
+					</td>
+					<td>
+						<table width="100%" cellpadding="4" border="1" class="tabla">
+							<tr>
+								<th>NOTA DE VENTA</th>
+							</tr>
+							<tr>
+								<td class="text-center negritas"><?=$venta->n?></td>
+							</tr>
+							<tr>
+								<th>FECHA</th>
+							</tr>
+							<tr>
+								<td class="text-center"><?=$venta->fecha_c?></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+			<div class="clear"></div>
+		</div>
+		
+		<br>
+		
+		<div class="marginTop10">
+			<table width="100%" cellpadding="4" border="1" class="tabla">
+				<tr>
+					<th width="12%">CANTIDAD</th>
+					<th width="12%">UNIDAD</th>
+					<th>ARTÍCULO</th>
+					<th>REGISTRO</th>
+					<th width="12%">PRECIO</th>
+				</tr>
+				<?php
+				foreach($productos as $p)
+				{
+					$iva = $p['subtotal'] * ($p['iva'] / 100);
+					@$_s += $p['subtotal'];
+					@$_i += $iva;
+					@$_t += $p['total'];
+				?>
+				<tr>
+					<td class="text-right"><?=$p['cantidad']?></td>
+					<td>Piezas</td>
+					<td nowrap><?=$p['categoria_descripcion']?> - <?=$p['descripcion']?></td>
+					<td nowrap><?=$p['registro']?></td>
+					<td class="text-right"><?=money($p['total'])?></td>
+				</tr>
+				<?php
+				}
+				?>
+				<tr>
+					<th colspan="4" class="text-right">Subtotal</th>
+					<td class="text-right"><?=money($_s)?></td>
+				</tr>
+				<tr>
+					<th colspan="4" class="text-right">I.V.A.</th>
+					<td class="text-right"><?=money($_i)?></td>
+				</tr>
+				<tr>
+					<th colspan="4" class="text-right">Total</th>
+					<td class="text-right"><?=money($_t)?></td>
+				</tr>
+				</tr>
+			</table>
+		</div>
+	
+		<div class="clear"></div>
+	</div>
+  </body>
+</html>

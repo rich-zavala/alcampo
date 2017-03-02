@@ -1,0 +1,157 @@
+<div class="row">
+	<div class="col-sm-12">
+		<h2 class="moduloHeader"><span><?=$titulo?></span></h2>
+	</div>
+</div>
+
+<?php
+//Mensaje de evento
+if(isset($evento)){
+?>
+<div class="alert alert-<?=(!isset($error)) ? 'success' : 'danger'?> alert-dismissable">
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+	<?=$evento?>
+</div>
+<?php } ?>
+
+<form class="form row" role="form" action="<?=path()?><?=$controlador?>/registro<?=suffix()?>" id="formRecord" method="post">
+	<div class="col-md-7 div-center">
+		<?php if($exito){ ?>
+		<div class="alert alert-success">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+			<span class="marginRight6 glyphicon glyphicon-ok"></span> 
+			Los precios de los productos se han actualizado exitosamente.
+		</div>
+		<?php } else{ ?>
+		<div class="alert alert-info">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+			<span class="marginRight6 glyphicon glyphicon-exclamation-sign"></span> 
+			Cambie la información de los precios de los productos.
+		</div>
+		<?php } ?>
+	
+		<table class="table table-striped table-bordered table-condensed table-hover" id="tabla">
+			<thead>
+				<tr class="active table-border-top-tr">
+					<th width="22%">Calibre</th>
+					<th width="38%">Descripción</th>
+					<th width="13.33%">Precio</th>
+					<th width="7.33%">IVA</th>
+					<th width="13.33%">Total</th>
+					<th width="6%"></th>
+				</tr>
+			</thead>
+			<?php
+			$k = 0;
+			foreach($lineas as $linea)
+			{
+				$l = 'l' . md5($linea);
+			?>
+			<thead>
+				<tr class="lineaHeader table-border-top-tr table-tr-primary">
+					<th colspan="5"><?=$linea?></th>
+					<th class="text-center"><a href="#" data-linea="<?=$l?>" class="btn btn-success btn-xs agregar_producto"><span class="glyphicon glyphicon-plus"></span></a></th>
+				</tr>
+			</thead>
+			<tbody id="<?=$l?>">
+			</tbody>
+			<?php } ?>
+		</table>
+	</div>
+	<div class="alert alert-warning hid"></div>
+	<div class="well text-center">
+		<button class="btn btn-primary btn-lg"><span class="marginRight6 glyphicon glyphicon-floppy-open"></span> Registrar cambios</button>
+	</div>
+</form>
+<script>
+//Categorias por linea
+var categorias = <?=$categorias?>;
+var productos = <?=(strlen($productos) > 0) ? $productos : '{}'?>;
+
+//Agregar productos actuales
+for(p in productos)
+{
+	agregar_producto(productos[p]);
+}
+
+//Click en agregar
+$('.agregar_producto').click(function(){
+	event.preventDefault();
+	var p = {
+		linea: $(this).data('linea'),
+		id: 0,
+		categoria: '',
+		descripcion: '',
+		precio: 0,
+		total: 0,
+		vendidos: 0
+	}
+	agregar_producto(p);
+});
+
+//Generar nuevo producto
+function agregar_producto(p)
+{
+	var cats = $('<select name="categoria[]" class="form-control"></select>');
+	for(linea in categorias) if(linea == p.linea) for(producto in categorias[linea]) cats.append('<option value="' + categorias[linea][producto].id + '">'+categorias[linea][producto].descripcion+'</option>');
+	
+	var r = $('<tr>'
+					+	'	<td></td>'
+					+	'	<td><input type="text" name="descripcion[]" class="form-control" placeholder="Nombre de producto" value="' + p.descripcion + '" required /></td>'
+					+	'	<td class="text-right tdPrecio">'
+					+	'		<span>' + p.precio + '</span>'
+					+	'		<input type="hidden" name="id[]" value="' + p.id + '" />'
+					+	'		<input type="hidden" name="precio[]" value="' + p.precio + '" />'
+					+	'	</td>'
+					+	'	<td class="text-center">16</td>'
+					+	'	<td class="text-center"><input type="number" class="form-control numerico_decimal text-right tdTotal" name="total[]" value="' + p.total + '" id="pr' + p.id + '" step="any" required /></td>'
+					+	'	<td class="text-center"><a href="#" data-producto"' + p.id + '" class="btn btn-danger btn-xs eliminar_producto" title="Elimine este producto del catálogo"><span class="glyphicon glyphicon-minus"></span></a></td>'
+					+	'</tr>');
+	
+	r.find('TD').first().append(cats);
+	cats.val(p.categoria);
+	
+	e = r.find('.eliminar_producto');
+	if(p.vendidos > 0)
+	{
+		e.addClass('disabled').click(function(){
+			event.preventDefault();
+			alert('Este producto ha sido vendido y no puede eliminarse.');
+		});
+	}
+	else
+	{
+		if(p.id == 0)
+		{
+			r.remove();
+		}
+		else
+		{
+			e.click(function(){
+				event.preventDefault();
+				if(confirm('Confirme la eliminación de este producto del catálogo.\nEsta acción no podrá deshacerse y se efectuará inmediatamente.')) r.remove();
+			});
+		}
+	}
+
+	//Numéricos
+	r.find('.numerico_entero').each(function(){ sinDecimal(this); });
+	r.find('.numerico_decimal').each(function(){ dosDecimales(this); });
+	r.find('.numerico_entero, .numerico_decimal').change(function(){
+		var t = $(this).parents('TR');
+		var iva = 16;
+		var total = Math.abs(parseFloat(t.find('.tdTotal').val()).toFixed(2));
+		
+		t.find('.tdIva').val(iva);
+		t.find('.tdTotal').val(total);
+		
+		var precio = (total / ( 1 + (iva / 100) )).toFixed(2);
+		tdP = t.find('.tdPrecio');
+		tdP.find('SPAN').text(precio);
+		tdP.find('[name="precio[]"]').val(precio);
+	}).blur(function(){ $(this).change(); }).change();
+	
+	$('#' + p.linea).append(r);
+}
+
+</script>
